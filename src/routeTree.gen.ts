@@ -9,38 +9,188 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WishlistRouteImport } from './routes/wishlist'
+import { Route as StatusRouteImport } from './routes/status'
+import { Route as KeranjangRouteImport } from './routes/keranjang'
+import { Route as KategoriRouteImport } from './routes/kategori'
+import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as AkunRouteImport } from './routes/akun'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProdukSlugRouteImport } from './routes/produk.$slug'
+import { Route as PembayaranQrisRouteImport } from './routes/pembayaran.qris'
 
+const WishlistRoute = WishlistRouteImport.update({
+  id: '/wishlist',
+  path: '/wishlist',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StatusRoute = StatusRouteImport.update({
+  id: '/status',
+  path: '/status',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KeranjangRoute = KeranjangRouteImport.update({
+  id: '/keranjang',
+  path: '/keranjang',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KategoriRoute = KategoriRouteImport.update({
+  id: '/kategori',
+  path: '/kategori',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AkunRoute = AkunRouteImport.update({
+  id: '/akun',
+  path: '/akun',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProdukSlugRoute = ProdukSlugRouteImport.update({
+  id: '/produk/$slug',
+  path: '/produk/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PembayaranQrisRoute = PembayaranQrisRouteImport.update({
+  id: '/pembayaran/qris',
+  path: '/pembayaran/qris',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/akun': typeof AkunRoute
+  '/checkout': typeof CheckoutRoute
+  '/kategori': typeof KategoriRoute
+  '/keranjang': typeof KeranjangRoute
+  '/status': typeof StatusRoute
+  '/wishlist': typeof WishlistRoute
+  '/pembayaran/qris': typeof PembayaranQrisRoute
+  '/produk/$slug': typeof ProdukSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/akun': typeof AkunRoute
+  '/checkout': typeof CheckoutRoute
+  '/kategori': typeof KategoriRoute
+  '/keranjang': typeof KeranjangRoute
+  '/status': typeof StatusRoute
+  '/wishlist': typeof WishlistRoute
+  '/pembayaran/qris': typeof PembayaranQrisRoute
+  '/produk/$slug': typeof ProdukSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/akun': typeof AkunRoute
+  '/checkout': typeof CheckoutRoute
+  '/kategori': typeof KategoriRoute
+  '/keranjang': typeof KeranjangRoute
+  '/status': typeof StatusRoute
+  '/wishlist': typeof WishlistRoute
+  '/pembayaran/qris': typeof PembayaranQrisRoute
+  '/produk/$slug': typeof ProdukSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/akun'
+    | '/checkout'
+    | '/kategori'
+    | '/keranjang'
+    | '/status'
+    | '/wishlist'
+    | '/pembayaran/qris'
+    | '/produk/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/akun'
+    | '/checkout'
+    | '/kategori'
+    | '/keranjang'
+    | '/status'
+    | '/wishlist'
+    | '/pembayaran/qris'
+    | '/produk/$slug'
+  id:
+    | '__root__'
+    | '/'
+    | '/akun'
+    | '/checkout'
+    | '/kategori'
+    | '/keranjang'
+    | '/status'
+    | '/wishlist'
+    | '/pembayaran/qris'
+    | '/produk/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AkunRoute: typeof AkunRoute
+  CheckoutRoute: typeof CheckoutRoute
+  KategoriRoute: typeof KategoriRoute
+  KeranjangRoute: typeof KeranjangRoute
+  StatusRoute: typeof StatusRoute
+  WishlistRoute: typeof WishlistRoute
+  PembayaranQrisRoute: typeof PembayaranQrisRoute
+  ProdukSlugRoute: typeof ProdukSlugRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/wishlist': {
+      id: '/wishlist'
+      path: '/wishlist'
+      fullPath: '/wishlist'
+      preLoaderRoute: typeof WishlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/status': {
+      id: '/status'
+      path: '/status'
+      fullPath: '/status'
+      preLoaderRoute: typeof StatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/keranjang': {
+      id: '/keranjang'
+      path: '/keranjang'
+      fullPath: '/keranjang'
+      preLoaderRoute: typeof KeranjangRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kategori': {
+      id: '/kategori'
+      path: '/kategori'
+      fullPath: '/kategori'
+      preLoaderRoute: typeof KategoriRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout': {
+      id: '/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/akun': {
+      id: '/akun'
+      path: '/akun'
+      fullPath: '/akun'
+      preLoaderRoute: typeof AkunRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +198,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/produk/$slug': {
+      id: '/produk/$slug'
+      path: '/produk/$slug'
+      fullPath: '/produk/$slug'
+      preLoaderRoute: typeof ProdukSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pembayaran/qris': {
+      id: '/pembayaran/qris'
+      path: '/pembayaran/qris'
+      fullPath: '/pembayaran/qris'
+      preLoaderRoute: typeof PembayaranQrisRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AkunRoute: AkunRoute,
+  CheckoutRoute: CheckoutRoute,
+  KategoriRoute: KategoriRoute,
+  KeranjangRoute: KeranjangRoute,
+  StatusRoute: StatusRoute,
+  WishlistRoute: WishlistRoute,
+  PembayaranQrisRoute: PembayaranQrisRoute,
+  ProdukSlugRoute: ProdukSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
