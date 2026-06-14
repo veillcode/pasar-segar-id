@@ -89,11 +89,11 @@ function CheckoutPage() {
       setLastOrder(order.order_no, total, snap);
 
       if (payment === "qris") {
-        navigate({ to: "/pembayaran/qris", search: { id: order.id } as never });
+        navigate({ to: "/pembayaran/qris" });
       } else {
         await supabase.from("orders").update({ status: "paid" }).eq("id", order.id);
         clear();
-        navigate({ to: "/status", search: { id: order.id } as never });
+        navigate({ to: "/status" });
       }
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Gagal membuat pesanan");
