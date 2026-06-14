@@ -31,7 +31,11 @@ function QrisPage() {
   const expHH = String(expiresAt.getHours()).padStart(2, "0");
   const expMM = String(expiresAt.getMinutes()).padStart(2, "0");
 
-  const handlePaid = () => {
+  const handlePaid = async () => {
+    try {
+      const { supabase } = await import("@/integrations/supabase/client");
+      await supabase.from("orders").update({ status: "paid" }).eq("order_no", orderId);
+    } catch {}
     clear();
     navigate({ to: "/status" });
   };

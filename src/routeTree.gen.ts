@@ -14,6 +14,7 @@ import { Route as StatusRouteImport } from './routes/status'
 import { Route as KeranjangRouteImport } from './routes/keranjang'
 import { Route as KategoriRouteImport } from './routes/kategori'
 import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AkunRouteImport } from './routes/akun'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProdukSlugRouteImport } from './routes/produk.$slug'
@@ -44,6 +45,11 @@ const CheckoutRoute = CheckoutRouteImport.update({
   path: '/checkout',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AkunRoute = AkunRouteImport.update({
   id: '/akun',
   path: '/akun',
@@ -68,6 +74,7 @@ const PembayaranQrisRoute = PembayaranQrisRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/akun': typeof AkunRoute
+  '/auth': typeof AuthRoute
   '/checkout': typeof CheckoutRoute
   '/kategori': typeof KategoriRoute
   '/keranjang': typeof KeranjangRoute
@@ -79,6 +86,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/akun': typeof AkunRoute
+  '/auth': typeof AuthRoute
   '/checkout': typeof CheckoutRoute
   '/kategori': typeof KategoriRoute
   '/keranjang': typeof KeranjangRoute
@@ -91,6 +99,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/akun': typeof AkunRoute
+  '/auth': typeof AuthRoute
   '/checkout': typeof CheckoutRoute
   '/kategori': typeof KategoriRoute
   '/keranjang': typeof KeranjangRoute
@@ -104,6 +113,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/akun'
+    | '/auth'
     | '/checkout'
     | '/kategori'
     | '/keranjang'
@@ -115,6 +125,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/akun'
+    | '/auth'
     | '/checkout'
     | '/kategori'
     | '/keranjang'
@@ -126,6 +137,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/akun'
+    | '/auth'
     | '/checkout'
     | '/kategori'
     | '/keranjang'
@@ -138,6 +150,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AkunRoute: typeof AkunRoute
+  AuthRoute: typeof AuthRoute
   CheckoutRoute: typeof CheckoutRoute
   KategoriRoute: typeof KategoriRoute
   KeranjangRoute: typeof KeranjangRoute
@@ -184,6 +197,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/akun': {
       id: '/akun'
       path: '/akun'
@@ -218,6 +238,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AkunRoute: AkunRoute,
+  AuthRoute: AuthRoute,
   CheckoutRoute: CheckoutRoute,
   KategoriRoute: KategoriRoute,
   KeranjangRoute: KeranjangRoute,

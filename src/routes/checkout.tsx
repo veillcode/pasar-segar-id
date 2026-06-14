@@ -1,8 +1,12 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, MapPin, Check, Shield, ChevronRight } from "lucide-react";
+import { ArrowLeft, MapPin, Check, Shield, ChevronRight, Loader2 } from "lucide-react";
+import { useState } from "react";
 import { MobileShell } from "@/components/MobileShell";
 import { useCartDetails, useStore, SHIPPING } from "@/lib/store";
-import { rupiah, generateOrderId } from "@/lib/format";
+import { rupiah } from "@/lib/format";
+import { useAuth } from "@/lib/auth";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({ meta: [{ title: "Checkout — Pasar Segar" }] }),
@@ -36,19 +40,65 @@ function CheckoutPage() {
   const setLastOrder = useStore((s) => s.setLastOrder);
   const clear = useStore((s) => s.clear);
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const [submitting, setSubmitting] = useState(false);
 
   const ongkir = SHIPPING[shipping].price;
   const total = subtotal + ongkir;
 
-  const handleBayar = () => {
-    const orderId = generateOrderId();
-    const snap = items.map((i) => ({ productId: i.productId, qty: i.qty }));
-    setLastOrder(orderId, total, snap);
-    if (payment === "qris") {
-      navigate({ to: "/pembayaran/qris" });
-    } else {
-      clear();
-      navigate({ to: "/status" });
+  const handleBayar = async () => {
+    if (!user) {
+      toast.info("Silakan masuk untuk melanjutkan pesanan");
+      navigate({ to: "/auth" });
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const { data: order, error } = await supabase
+        .from("orders")
+        .insert({
+          user_id: user.id,
+          subtotal,
+          shipping_fee: ongkir,
+          total,
+          shipping_method: shipping,
+          payment_method: payment,
+          status: "pending",
+          recipient_name: "Rumah",
+          recipient_phone: "62812xxxxxx",
+          address: "Jl. Melati No.15, Depok, Jawa Barat",
+        })
+        .select("id, order_no")
+        .single();
+      if (error || !order) throw error ?? new Error("Gagal membuat pesanan");
+
+      const lineItems = items.map((i) => ({
+        order_id: order.id,
+        product_id: i.product.id,
+        product_slug: i.product.slug,
+        product_name: i.product.name,
+        product_weight: i.product.weight,
+        price: i.product.price,
+        qty: i.qty,
+        line_total: i.lineTotal,
+      }));
+      const { error: itemErr } = await supabase.from("order_items").insert(lineItems);
+      if (itemErr) throw itemErr;
+
+      const snap = items.map((i) => ({ productId: i.productId, qty: i.qty }));
+      setLastOrder(order.order_no, total, snap);
+
+      if (payment === "qris") {
+        navigate({ to: "/pembayaran/qris" });
+      } else {
+        await supabase.from("orders").update({ status: "paid" }).eq("id", order.id);
+        clear();
+        navigate({ to: "/status" });
+      }
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Gagal membuat pesanan");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -178,12 +228,12 @@ function CheckoutPage() {
       <div className="fixed bottom-0 left-0 right-0 z-30">
         <div className="phone-shell !min-h-0 !mt-0 !mb-0 !shadow-none !border-0">
           <div className="bg-white border-t border-border p-3">
-            <button onClick={handleBayar} className="w-full bg-primary text-primary-foreground font-bold py-3.5 rounded-xl flex items-center justify-between px-5">
+            <button disabled={submitting} onClick={handleBayar} className="w-full bg-primary text-primary-foreground font-bold py-3.5 rounded-xl flex items-center justify-between px-5 disabled:opacity-60">
               <span className="text-left leading-tight">
-                <span className="block text-[15px]">Bayar Sekarang</span>
+                <span className="block text-[15px]">{submitting ? "Memproses..." : "Bayar Sekarang"}</span>
                 <span className="block text-xs font-normal opacity-90">Total: {rupiah(total)}</span>
               </span>
-              <ChevronRight className="h-5 w-5" />
+              {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : <ChevronRight className="h-5 w-5" />}
             </button>
           </div>
         </div>
