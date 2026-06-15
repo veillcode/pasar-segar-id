@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { PRODUCTS, type Product } from "./products";
+import { applyOverride, useCatalog } from "./catalog";
 
 export interface CartItem {
   productId: string;
@@ -10,7 +11,7 @@ export interface CartItem {
 interface State {
   items: CartItem[];
   wishlist: string[];
-  shippingMethod: "instan" | "reguler" | "hemat";
+  shippingMethod: string;
   paymentMethod: "cod" | "transfer" | "qris" | "ewallet";
   lastOrderId?: string;
   lastOrderTotal?: number;
@@ -20,7 +21,7 @@ interface State {
   setQty: (id: string, qty: number) => void;
   clear: () => void;
   toggleWish: (id: string) => void;
-  setShipping: (m: State["shippingMethod"]) => void;
+  setShipping: (m: string) => void;
   setPayment: (m: State["paymentMethod"]) => void;
   setLastOrder: (id: string, total: number, items: CartItem[]) => void;
 }
@@ -62,18 +63,17 @@ export const useStore = create<State>()(
   ),
 );
 
-export const SHIPPING: Record<State["shippingMethod"], { label: string; desc: string; price: number }> = {
-  instan: { label: "Instan (Same Day)", desc: "Sampai hari ini · 08.00 - 20.00", price: 12000 },
-  reguler: { label: "Reguler", desc: "2-3 hari kerja", price: 8000 },
-  hemat: { label: "Hemat", desc: "3-5 hari kerja", price: 5000 },
-};
-
 export const useCartDetails = () => {
   const items = useStore((s) => s.items);
-  const detailed = items.map((i) => {
-    const p = PRODUCTS.find((pp) => pp.id === i.productId)!;
-    return { ...i, product: p as Product, lineTotal: p.price * i.qty };
-  });
+  const overrides = useCatalog((s) => s.overrides);
+  const detailed = items
+    .map((i) => {
+      const base = PRODUCTS.find((pp) => pp.id === i.productId);
+      if (!base) return null;
+      const product = applyOverride(base, overrides);
+      return { ...i, product: product as Product, lineTotal: product.price * i.qty };
+    })
+    .filter((x): x is { productId: string; qty: number; product: Product; lineTotal: number } => x !== null);
   const subtotal = detailed.reduce((s, i) => s + i.lineTotal, 0);
   const count = detailed.reduce((s, i) => s + i.qty, 0);
   return { items: detailed, subtotal, count };
