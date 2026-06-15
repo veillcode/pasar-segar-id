@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, Minus, Plus, Trash2 } from "lucide-react";
 import { MobileShell } from "@/components/MobileShell";
-import { useCartDetails, useStore, SHIPPING } from "@/lib/store";
+import { useCartDetails, useStore } from "@/lib/store";
+import { useShippingMap } from "@/lib/catalog";
 import { rupiah } from "@/lib/format";
 
 export const Route = createFileRoute("/keranjang")({
@@ -14,7 +15,8 @@ function KeranjangPage() {
   const setQty = useStore((s) => s.setQty);
   const remove = useStore((s) => s.remove);
   const shipping = useStore((s) => s.shippingMethod);
-  const ongkir = SHIPPING[shipping].price;
+  const shippingMap = useShippingMap();
+  const ongkir = shippingMap[shipping]?.price ?? 0;
   const total = subtotal + ongkir;
   const targetFree = 100000;
   const progress = Math.min(100, (subtotal / targetFree) * 100);

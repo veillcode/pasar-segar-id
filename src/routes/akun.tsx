@@ -1,8 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, User, Receipt, Heart, LogOut, ChevronRight, Loader2, Package } from "lucide-react";
+import { ArrowLeft, User, Receipt, Heart, LogOut, ChevronRight, Loader2, Package, Shield } from "lucide-react";
 import { useEffect, useState } from "react";
 import { MobileShell } from "@/components/MobileShell";
 import { useAuth, signOut } from "@/lib/auth";
+import { useIsAdmin } from "@/lib/admin";
 import { supabase } from "@/integrations/supabase/client";
 import { rupiah, formatDateTimeWIB } from "@/lib/format";
 import { toast } from "sonner";
@@ -22,9 +23,20 @@ interface OrderRow {
 
 function AkunPage() {
   const { user, loading } = useAuth();
+  const { isAdmin } = useIsAdmin();
   const [orders, setOrders] = useState<OrderRow[]>([]);
   const [profile, setProfile] = useState<{ full_name: string | null } | null>(null);
+  const [claiming, setClaiming] = useState(false);
   const navigate = useNavigate();
+
+  const handleClaimAdmin = async () => {
+    setClaiming(true);
+    const { data, error } = await supabase.rpc("claim_first_admin");
+    setClaiming(false);
+    if (error) { toast.error(error.message); return; }
+    if (data === true) { toast.success("Selamat! Kamu sekarang admin"); window.location.reload(); }
+    else toast.info("Admin sudah ada. Hubungi admin untuk akses.");
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -116,6 +128,21 @@ function AkunPage() {
           <span className="flex-1 text-sm font-medium">Wishlist</span>
           <ChevronRight className="h-4 w-4 text-muted-foreground" />
         </Link>
+
+        {isAdmin ? (
+          <Link to="/admin" className="mt-3 bg-white rounded-2xl border border-border px-4 py-3.5 flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-accent/20 text-accent flex items-center justify-center"><Shield className="h-4 w-4" /></div>
+            <span className="flex-1 text-sm font-medium">Admin Panel</span>
+            <span className="text-[10px] font-bold bg-accent/20 text-accent px-2 py-0.5 rounded">ADMIN</span>
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          </Link>
+        ) : (
+          <button onClick={handleClaimAdmin} disabled={claiming} className="mt-3 w-full bg-white rounded-2xl border border-border px-4 py-3.5 flex items-center gap-3 disabled:opacity-60">
+            <div className="w-9 h-9 rounded-xl bg-muted text-muted-foreground flex items-center justify-center"><Shield className="h-4 w-4" /></div>
+            <span className="flex-1 text-sm font-medium text-left">Jadi Admin (jika belum ada)</span>
+            {claiming && <Loader2 className="h-4 w-4 animate-spin" />}
+          </button>
+        )}
 
         <button onClick={async () => { await signOut(); toast.success("Berhasil logout"); navigate({ to: "/" }); }} className="mt-4 w-full bg-white border border-border rounded-2xl py-3.5 flex items-center justify-center gap-2 text-sm font-semibold text-secondary">
           <LogOut className="h-4 w-4" /> Logout
