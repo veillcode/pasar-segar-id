@@ -2,7 +2,8 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, MapPin, Check, Shield, ChevronRight, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { MobileShell } from "@/components/MobileShell";
-import { useCartDetails, useStore, SHIPPING } from "@/lib/store";
+import { useCartDetails, useStore } from "@/lib/store";
+import { useShippingMap } from "@/lib/catalog";
 import { rupiah } from "@/lib/format";
 import { useAuth } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
@@ -42,8 +43,9 @@ function CheckoutPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [submitting, setSubmitting] = useState(false);
+  const shippingMap = useShippingMap();
 
-  const ongkir = SHIPPING[shipping].price;
+  const ongkir = shippingMap[shipping]?.price ?? 0;
   const total = subtotal + ongkir;
 
   const handleBayar = async () => {
@@ -168,8 +170,8 @@ function CheckoutPage() {
         <div className="bg-white rounded-2xl border border-border p-4">
           <p className="text-sm font-semibold mb-2">Metode Pengiriman</p>
           <div className="space-y-2">
-            {(Object.keys(SHIPPING) as (keyof typeof SHIPPING)[]).map((k) => {
-              const s = SHIPPING[k];
+            {Object.keys(shippingMap).map((k) => {
+              const s = shippingMap[k];
               const active = shipping === k;
               return (
                 <button key={k} onClick={() => setShipping(k)} className={`w-full flex items-center gap-3 p-3 rounded-xl border ${active ? "border-primary bg-primary-soft" : "border-border"}`}>
