@@ -2,7 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Menu, Search, ShoppingCart, Truck, Leaf, Tag, ChevronRight, Star } from "lucide-react";
 import { MobileShell } from "@/components/MobileShell";
 import { ProductCard } from "@/components/ProductCard";
-import { CATEGORIES, PRODUCTS } from "@/lib/products";
+import { CATEGORIES } from "@/lib/products";
+import { useProducts } from "@/lib/catalog";
 import { useStore } from "@/lib/store";
 import heroMarket from "@/assets/hero-market.jpg";
 
@@ -18,7 +19,8 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const count = useStore((s) => s.items.reduce((a, b) => a + b.qty, 0));
-  const bestsellers = PRODUCTS.filter((p) => p.bestseller).concat(PRODUCTS.slice(0, 8)).slice(0, 10);
+  const products = useProducts();
+  const bestsellers = products.filter((p) => p.bestseller).concat(products.slice(0, 8)).slice(0, 10);
 
   return (
     <MobileShell>

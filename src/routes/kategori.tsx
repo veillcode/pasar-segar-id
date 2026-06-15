@@ -2,7 +2,8 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, Search } from "lucide-react";
 import { MobileShell } from "@/components/MobileShell";
 import { ProductCard } from "@/components/ProductCard";
-import { PRODUCTS, type Category } from "@/lib/products";
+import { type Category } from "@/lib/products";
+import { useProducts } from "@/lib/catalog";
 import { z } from "zod";
 
 const searchSchema = z.object({
@@ -34,7 +35,8 @@ const SORTS = [
 function KategoriPage() {
   const { cat = "cabai", sort } = Route.useSearch();
   const navigate = useNavigate();
-  const filtered = PRODUCTS.filter((p) => p.category === cat);
+  const products = useProducts();
+  const filtered = products.filter((p) => p.category === cat);
   const sorted = [...filtered].sort((a, b) => {
     if (sort === "harga") return a.price - b.price;
     if (sort === "terlaris") return b.reviews - a.reviews;
