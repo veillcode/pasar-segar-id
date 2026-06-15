@@ -3,6 +3,7 @@ import { ArrowLeft, Heart, Star, Minus, Plus, Shield } from "lucide-react";
 import { MobileShell } from "@/components/MobileShell";
 import { ProductCard } from "@/components/ProductCard";
 import { findProduct, PRODUCTS } from "@/lib/products";
+import { useProductBySlug, useProducts } from "@/lib/catalog";
 import { rupiah } from "@/lib/format";
 import { useStore } from "@/lib/store";
 import { useState } from "react";
@@ -17,7 +18,8 @@ export const Route = createFileRoute("/produk/$slug")({
 
 function ProdukDetail() {
   const { slug } = Route.useParams();
-  const product = findProduct(slug);
+  const product = useProductBySlug(slug);
+  const allProducts = useProducts();
   const [qty, setQty] = useState(1);
   const add = useStore((s) => s.add);
   const wish = useStore((s) => s.wishlist);
@@ -33,7 +35,7 @@ function ProdukDetail() {
   }
 
   const isWish = wish.includes(product.id);
-  const related = PRODUCTS.filter((p) => p.category === product.category && p.id !== product.id).slice(0, 4);
+  const related = allProducts.filter((p) => p.category === product.category && p.id !== product.id).slice(0, 4);
 
   return (
     <MobileShell hideNav>
@@ -91,17 +93,23 @@ function ProdukDetail() {
 
       <div className="fixed bottom-0 left-0 right-0 z-30">
         <div className="phone-shell !min-h-0 !mt-0 !mb-0 !shadow-none !border-0">
-          <div className="bg-white border-t border-border p-3 flex items-center gap-3">
+          <div className="bg-white border-t border-border p-3 flex items-center gap-2">
             <div className="inline-flex items-center border border-border rounded-xl">
-              <button onClick={() => setQty(Math.max(1, qty - 1))} className="px-3 py-2.5"><Minus className="h-4 w-4" /></button>
-              <span className="px-3 text-sm font-bold">{qty}</span>
-              <button onClick={() => setQty(qty + 1)} className="px-3 py-2.5 text-primary"><Plus className="h-4 w-4" /></button>
+              <button onClick={() => setQty(Math.max(1, qty - 1))} className="px-2.5 py-2.5"><Minus className="h-4 w-4" /></button>
+              <span className="px-2.5 text-sm font-bold">{qty}</span>
+              <button onClick={() => setQty(qty + 1)} className="px-2.5 py-2.5 text-primary"><Plus className="h-4 w-4" /></button>
             </div>
             <button
               onClick={() => { add(product.id, qty); navigate({ to: "/keranjang" }); }}
-              className="flex-1 bg-primary text-primary-foreground font-semibold py-3 rounded-xl"
+              className="flex-1 border border-primary text-primary font-semibold py-3 rounded-xl text-sm"
             >
-              Tambah ke Keranjang
+              + Keranjang
+            </button>
+            <button
+              onClick={() => { add(product.id, qty); navigate({ to: "/checkout" }); }}
+              className="flex-1 bg-primary text-primary-foreground font-semibold py-3 rounded-xl text-sm"
+            >
+              Beli Sekarang
             </button>
           </div>
         </div>
